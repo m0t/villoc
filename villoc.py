@@ -221,9 +221,12 @@ def parse_ltrace(ltrace):
     for line in ltrace:
 
         # if the trace file contains PID (for ltrace -f)
-        head, _, tail = line.partition(" ")
-        if head.isdigit():
-            line = tail
+        #head, _, tail = line.partition(" ")
+        #if head.isdigit():
+        #    line = tail
+        pidline = re.findall("(\[pid \d+\]) (.*)", line )
+        if len(pidline) > 0:
+            line = pidline[1]
 
         if not any(line.startswith(f) for f in operations):
             continue
