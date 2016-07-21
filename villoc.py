@@ -225,8 +225,8 @@ def parse_ltrace(ltrace):
         #if head.isdigit():
         #    line = tail
         pidline = re.findall("(\[pid \d+\]) (.*)", line )
-        if len(pidline) > 0:
-            line = pidline[1]
+        if len(pidline) > 1:
+            line = pidline[0][1]
 
         if not any(line.startswith(f) for f in operations):
             continue
@@ -292,12 +292,14 @@ def print_state(out, boundaries, state):
 
     known_stops = set()
 
-    todo = state
+    #todo = state
+    todo = {x.start():x for x in state}
     while todo:
 
         out.write('<div class="line" style="">\n')
 
-        done = []
+        #done = []
+        done = set()
 
         current = None
         last = 0
@@ -313,15 +315,19 @@ def print_state(out, boundaries, state):
             if current:  # stops here.
                 known_stops.add(i)
                 current.gen_html(out, i - last)
-                done.append(current)
+                #done.append(current)
+                done.add(current)
                 last = i
 
             current = None
-            for block in todo:
-                if block.start() == b:
-                    current = block
-                    break
-            else:
+            #for block in todo:
+            #    if block.start() == b:
+            #        current = block
+            #        break
+            #else
+            try:
+                current = todo[b]
+            except:
                 continue
 
             if last != i:
